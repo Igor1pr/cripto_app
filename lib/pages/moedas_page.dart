@@ -1,8 +1,10 @@
 import 'package:cripto_app/models/moeda.dart';
 import 'package:cripto_app/pages/moedas_detalhes_page.dart';
+import 'package:cripto_app/repositories/favoritas_repository.dart';
 import 'package:cripto_app/repositories/moeda_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MoedasPage extends StatefulWidget {
   const MoedasPage({super.key});
@@ -17,6 +19,9 @@ class _MoedasPageState extends State<MoedasPage> {
   NumberFormat real = NumberFormat.currency(locale: 'pt-BR', name: 'R\$');
 
   List<Moeda> selecionadas = [];
+
+  // Variável para acessar o repositório de favoritas
+  late FavoritasRepository favoritas;
 
   appBarDinamica() {
     if (selecionadas.isEmpty) {
@@ -67,6 +72,13 @@ class _MoedasPageState extends State<MoedasPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Formas de recuperar os dados do rep de favoritas:
+
+    // Acessando o Provider especificando o tipo de Provider; acessando favoritas.list, se tem acesso a todos os métodos e dados disponíveis
+    //favoritas = Provider.of<FavoritasRepository>(context);
+
+    // Acessando o Provider por meio do context do build; o método watch espera por mudanças; também há o read, caso seja preciso somente ler dados do Provider, mas sem a necessidade de responsividade na tela
+    favoritas = context.watch<FavoritasRepository>();
 
     return Scaffold(
       appBar: appBarDinamica(),
@@ -93,6 +105,8 @@ class _MoedasPageState extends State<MoedasPage> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
+                  if (favoritas.lista.contains(tabela[moeda]))
+                    const Icon(Icons.star, color: Colors.amber, size: 14)
                 ],
               ),
               trailing: Text(
@@ -120,7 +134,11 @@ class _MoedasPageState extends State<MoedasPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: selecionadas.isNotEmpty
           ? FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () {
+                // Não é necessário usar o SetState pois dentro do repositório, o método já possui o notifyListeners
+                favoritas.saveAll(selecionadas);
+                limparSelecionadas();
+              },
               icon: const Icon(Icons.star),
               label: const Text(
                 'Favoritar',
