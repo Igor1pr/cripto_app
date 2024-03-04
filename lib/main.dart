@@ -1,6 +1,7 @@
 import 'package:cripto_app/configs/app_settings.dart';
 import 'package:cripto_app/configs/hive_config.dart';
 import 'package:cripto_app/my_app.dart';
+import 'package:cripto_app/repositories/conta_repository.dart';
 import 'package:cripto_app/repositories/favoritas_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ void main() async {
     // Qualquer widget filho do MyApp pode acessar os providers
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => ContaRepository()),
         ChangeNotifierProvider(create: (context) => AppSettings()),
         ChangeNotifierProvider(create: (context) => FavoritasRepository())
       ],

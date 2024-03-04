@@ -31,12 +31,16 @@ dependencies:
   flutter:
     sdk: flutter
   intl:
+  # https://stackoverflow.com/questions/73910261/the-imported-package-path-isnt-a-dependency-of-the-importing-package
+  path: any
   provider: ^6.1.1
   shared_preferences: ^2.2.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   # Help accessing the path where the database must be saved in the operational system
   path_provider: ^2.1.2
+  sqflite: ^2.3.2
+  fl_chart: ^0.66.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
