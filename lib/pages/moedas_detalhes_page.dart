@@ -1,7 +1,9 @@
 import 'package:cripto_app/models/moeda.dart';
+import 'package:cripto_app/repositories/conta_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class MoedasDetalhesPage extends StatefulWidget {
   final Moeda moeda;
@@ -23,9 +25,12 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
 
   double quantidade = 0;
 
-  comprar() {
+  late ContaRepository conta;
+
+  comprar() async {
     if (_form.currentState!.validate()) {
       // Salvar a compra
+      await conta.comprar(widget.moeda, double.parse(_valor.text));
 
       // Forma programática de voltar pra tela anterior
       Navigator.pop(context);
@@ -38,6 +43,7 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
 
   @override
   Widget build(BuildContext context) {
+    conta = Provider.of<ContaRepository>(context, listen: false);
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.moeda.nome),
@@ -113,6 +119,8 @@ class _MoedasDetalhesPageState extends State<MoedasDetalhesPage> {
                         return 'Informe o valor da compra';
                       } else if (double.parse(value) < 50) {
                         return 'A compra mínima é de R\$ 50,00';
+                      } else if (double.parse(value) > conta.saldo) {
+                        return 'Você não possui saldo suficiente';
                       }
                       return null;
                     },

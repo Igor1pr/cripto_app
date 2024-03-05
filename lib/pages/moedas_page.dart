@@ -1,3 +1,4 @@
+import 'package:cripto_app/configs/app_settings.dart';
 import 'package:cripto_app/models/moeda.dart';
 import 'package:cripto_app/pages/moedas_detalhes_page.dart';
 import 'package:cripto_app/repositories/favoritas_repository.dart';
@@ -16,12 +17,45 @@ class MoedasPage extends StatefulWidget {
 class _MoedasPageState extends State<MoedasPage> {
   final tabela = MoedaRepository.tabela;
 
-  NumberFormat real = NumberFormat.currency(locale: 'pt-BR', name: 'R\$');
+  late NumberFormat real;
+  late Map<String, String> loc;
 
   List<Moeda> selecionadas = [];
 
   // Variável para acessar o repositório de favoritas
   late FavoritasRepository favoritas;
+
+  // Método que fará a inicialização do local e do real (number format)
+  readNumberFormat() {
+    // Leitura do Provider
+    loc = context.watch<AppSettings>().locale;
+
+    // Inicializando a formatação do número de acordo com a preferência do usuário
+    real = NumberFormat.currency(locale: loc['locale'], name: loc['name']);
+  }
+
+  changeLanguageButton() {
+    // Verifica se o locale é pt_BR e mostra en_US, se não mostra pt-BR
+    final locale = loc['locale'] == 'pt-BR' ? 'en-US' : 'pt-BR';
+
+    // Mostra R$ ou $
+    final name = loc['locale'] == 'pt-BR' ? '\$' : 'R\$';
+
+    return PopupMenuButton(
+      icon: const Icon(Icons.language),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+            child: ListTile(
+          leading: const Icon(Icons.swap_vert),
+          title: Text('Usar $locale'),
+          onTap: () {
+            context.read<AppSettings>().setLocale(locale, name);
+            Navigator.pop(context);
+          },
+        ))
+      ],
+    );
+  }
 
   appBarDinamica() {
     if (selecionadas.isEmpty) {
@@ -33,6 +67,7 @@ class _MoedasPageState extends State<MoedasPage> {
             style: TextStyle(color: Colors.white),
           ),
         ),
+        actions: [changeLanguageButton()],
       );
     } else {
       return AppBar(
@@ -80,6 +115,8 @@ class _MoedasPageState extends State<MoedasPage> {
     // Acessando o Provider por meio do context do build; o método watch espera por mudanças; também há o read, caso seja preciso somente ler dados do Provider, mas sem a necessidade de responsividade na tela
     favoritas = context.watch<FavoritasRepository>();
 
+    readNumberFormat();
+
     return Scaffold(
       appBar: appBarDinamica(),
       body: ListView.separated(
@@ -105,7 +142,8 @@ class _MoedasPageState extends State<MoedasPage> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  if (favoritas.lista.contains(tabela[moeda]))
+                  if (favoritas.lista
+                      .any((fav) => fav.sigla == tabela[moeda].sigla))
                     const Icon(Icons.star, color: Colors.amber, size: 14)
                 ],
               ),

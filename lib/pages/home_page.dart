@@ -1,3 +1,5 @@
+import 'package:cripto_app/pages/carteira_page.dart';
+import 'package:cripto_app/pages/configuracoes_page.dart';
 import 'package:cripto_app/pages/favoritas_page.dart';
 import 'package:cripto_app/pages/moedas_page.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +43,8 @@ class _HomePageState extends State<HomePage> {
         children: const [
           MoedasPage(),
           FavoritasPage(),
+          CarteiraPage(),
+          ConfiguracoesPage()
         ],
       ),
       bottomNavigationBar: NavigationBarTheme(
@@ -71,6 +75,14 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(Icons.star_outline, size: 30),
                 selectedIcon: Icon(Icons.star, size: 30),
                 label: 'Favoritas'),
+            NavigationDestination(
+                icon: Icon(Icons.account_balance_wallet_outlined, size: 30),
+                selectedIcon: Icon(Icons.account_balance_wallet, size: 30),
+                label: 'Carteira'),
+            NavigationDestination(
+                icon: Icon(Icons.settings_outlined, size: 30),
+                selectedIcon: Icon(Icons.settings, size: 30),
+                label: 'Conta'),
           ],
         ),
       ),
